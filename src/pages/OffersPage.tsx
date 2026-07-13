@@ -20,8 +20,8 @@ export const OffersPage = (): JSX.Element => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
-  // Initial category comes from ?category=<slug> so the app's "Explore offers"
-  // button can deep-link straight to a category (e.g. /?category=feedback-zone).
+  // Initial category comes from ?category=<slug> — the app's hand-over link is
+  // <websiteUrl>?code=<code>&category=<slug> (code is stripped at boot).
   const [category, setCategory] = useState<string | null>(searchParams.get("category"));
   const [sort, setSort] = useState<SortOption>("priority");
 
@@ -89,105 +89,96 @@ export const OffersPage = (): JSX.Element => {
   }, [hasMore, loading, page, loadPage]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 pb-20">
-      {/* Hero */}
-      <header className="py-10 text-center sm:py-14">
-        <p className="chip mx-auto mb-4 border border-gold/40 bg-gold/10 text-gold">
-          🔥 Fresh offers every week
-        </p>
-        <h1 className="font-display text-3xl font-extrabold sm:text-5xl">
-          Earn <span className="bg-gradient-to-r from-gold-light to-gold-deep bg-clip-text text-transparent">real rewards</span>
-          <br className="hidden sm:block" /> for trying apps
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-slate-400 sm:text-base">
-          Pick an offer, install the app from Google Play, complete the task — the
-          reward lands in your RewardHub vault.
+    <div className="mx-auto w-full max-w-lg px-4 pb-20">
+      {/* Heading — app's Hot Offers screen tone */}
+      <header className="pb-4 pt-6">
+        <h1 className="font-display text-[28px] font-bold tracking-tight">Hot Offers</h1>
+        <p className="mt-1 text-sm leading-relaxed text-ink-soft">
+          Install an app, finish the task, upload proof — the coins land in your RewardHub
+          wallet.
         </p>
       </header>
 
       {/* Controls */}
-      <div className="glass-card sticky top-3 z-10 mb-6 flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
+      <div className="sticky top-14 z-10 -mx-4 space-y-2.5 bg-bgtop/80 px-4 py-3 backdrop-blur">
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder="Search offers…"
-          className="w-full rounded-xl border border-navy-border bg-navy px-4 py-2.5 text-sm outline-none placeholder:text-slate-500 focus:border-royal sm:max-w-xs"
+          className="field"
         />
-        <div className="flex flex-1 gap-2 overflow-x-auto pb-1 sm:pb-0">
-          <button
-            onClick={() => selectCategory(null)}
-            className={`chip shrink-0 border transition-colors ${
-              category === null
-                ? "border-gold bg-gold/15 text-gold"
-                : "border-navy-border text-slate-300 hover:border-slate-500"
-            }`}
-          >
-            All
-          </button>
-          {categories.map((item) => (
+        <div className="flex items-center gap-2">
+          <div className="flex flex-1 gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <button
-              key={item.id}
-              onClick={() => selectCategory(category === item.slug ? null : item.slug)}
+              onClick={() => selectCategory(null)}
               className={`chip shrink-0 border transition-colors ${
-                category === item.slug
-                  ? "border-gold bg-gold/15 text-gold"
-                  : "border-navy-border text-slate-300 hover:border-slate-500"
+                category === null
+                  ? "border-accent/60 bg-accent/10 text-accent"
+                  : "border-hairline bg-surface-alt text-ink-soft"
               }`}
             >
-              {item.title}
+              All
             </button>
-          ))}
+            {categories.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => selectCategory(category === item.slug ? null : item.slug)}
+                className={`chip shrink-0 border transition-colors ${
+                  category === item.slug
+                    ? "border-accent/60 bg-accent/10 text-accent"
+                    : "border-hairline bg-surface-alt text-ink-soft"
+                }`}
+              >
+                {item.title}
+              </button>
+            ))}
+          </div>
+          <select
+            value={sort}
+            onChange={(event) => setSort(event.target.value as SortOption)}
+            className="shrink-0 rounded-full border border-hairline bg-surface-alt px-3 py-1.5 text-xs font-semibold text-ink-soft outline-none focus:border-accent"
+          >
+            {SORTS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
-        <select
-          value={sort}
-          onChange={(event) => setSort(event.target.value as SortOption)}
-          className="rounded-xl border border-navy-border bg-navy px-3 py-2.5 text-sm outline-none focus:border-royal"
-        >
-          {SORTS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
       </div>
 
       {/* Grid */}
       {error && offers.length === 0 ? (
-        <div className="glass-card mx-auto max-w-md p-10 text-center">
-          <p className="text-4xl">🛰️</p>
-          <p className="mt-3 font-display font-bold">Connection interrupted</p>
-          <p className="mt-1 text-sm text-slate-400">{error}</p>
-          <button
-            onClick={() => void loadPage(1, true)}
-            className="mt-5 rounded-xl bg-gradient-to-r from-gold-light to-gold-deep px-6 py-2.5 text-sm font-extrabold text-[#241A00] shadow-glow"
-          >
+        <div className="glass-card mx-auto mt-6 max-w-sm p-8 text-center">
+          <p className="font-display font-bold">Connection interrupted</p>
+          <p className="mt-1 text-sm text-ink-soft">{error}</p>
+          <button onClick={() => void loadPage(1, true)} className="btn-accent mt-5 px-6 py-2.5 text-sm">
             Try again
           </button>
         </div>
       ) : offers.length === 0 && !loading ? (
-        <div className="glass-card mx-auto max-w-md p-10 text-center">
-          <p className="text-4xl">💎</p>
-          <p className="mt-3 font-display font-bold">No offers match</p>
-          <p className="mt-1 text-sm text-slate-400">
-            Try a different search or category — new treasure drops weekly.
+        <div className="glass-card mx-auto mt-6 max-w-sm p-8 text-center">
+          <p className="font-display font-bold">No offers match</p>
+          <p className="mt-1 text-sm text-ink-soft">
+            Try a different search or category — fresh offers drop weekly.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid grid-cols-2 gap-3">
           {offers.map((offer, index) => (
             <OfferCardTile key={offer.id} offer={offer} index={index} />
           ))}
           {loading &&
-            Array.from({ length: offers.length === 0 ? 6 : 3 }).map((_, index) => (
-              <div key={`skeleton-${index}`} className="skeleton h-80" />
+            Array.from({ length: offers.length === 0 ? 6 : 2 }).map((_, index) => (
+              <div key={`skeleton-${index}`} className="skeleton h-64" />
             ))}
         </div>
       )}
 
       <div ref={sentinel} className="h-2" />
       {!hasMore && offers.length > 0 && (
-        <p className="mt-8 text-center text-xs text-slate-500">
-          You've seen every live offer — check back soon 🎉
+        <p className="mt-8 text-center text-xs text-ink-muted">
+          You've seen every live offer — check back soon.
         </p>
       )}
     </div>

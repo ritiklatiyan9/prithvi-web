@@ -1,12 +1,8 @@
 import { Link } from "react-router-dom";
 import { api, type OfferCard } from "../lib/api";
+import { CoinIcon, FlameIcon } from "./ui";
 
-const Stars = ({ rating }: { rating: number }): JSX.Element => (
-  <span className="text-xs font-bold text-gold" aria-label={`${rating} out of 5`}>
-    ★ {rating.toFixed(1)}
-  </span>
-);
-
+/** 2-col grid card: art (crop-safe), 2-line title, coin row, START pill. */
 export const OfferCardTile = ({
   offer,
   index,
@@ -17,60 +13,44 @@ export const OfferCardTile = ({
   <Link
     to={`/offers/${offer.slug}`}
     onClick={() => api.track("CLICK", { offerId: offer.id })}
-    className="glass-card group block overflow-hidden transition-transform duration-200 hover:-translate-y-1 hover:shadow-glow-purple animate-float-up"
+    className={`glass-card group flex flex-col overflow-hidden animate-float-up ${
+      offer.featured ? "border-accent/40 shadow-glow-sm" : ""
+    }`}
     style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}
   >
-    {/* Thumbnail */}
-    <div className="relative h-36 overflow-hidden bg-gradient-to-br from-royal/40 via-navy-surface to-gold/20">
-      {offer.thumbnailUrl ? (
+    {/* Art — fixed ratio so any CMS image crops safely */}
+    <div className="relative aspect-[4/3] overflow-hidden bg-surface-alt">
+      {offer.thumbnailUrl ?? offer.logoUrl ? (
         <img
-          src={offer.thumbnailUrl}
+          src={offer.thumbnailUrl ?? offer.logoUrl ?? ""}
           alt=""
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-300 group-active:scale-105"
         />
       ) : (
-        <div className="flex h-full items-center justify-center text-5xl">🎁</div>
+        <div className="flex h-full items-center justify-center text-accent/60">
+          <FlameIcon size={36} />
+        </div>
       )}
       {offer.featured && (
-        <span className="chip absolute left-3 top-3 bg-gradient-to-r from-gold-light to-gold-deep text-[#241A00] shadow-glow">
-          ★ FEATURED
+        <span className="chip absolute left-2 top-2 bg-gradient-to-br from-accent to-accent-deep text-[10px] text-onaccent">
+          FEATURED
         </span>
       )}
-      <span className="chip absolute right-3 top-3 bg-navy/80 text-cyan backdrop-blur">
-        {offer.category.title}
-      </span>
     </div>
 
-    <div className="space-y-2 p-4">
-      <div className="flex items-start gap-2">
-        {offer.logoUrl && (
-          <img src={offer.logoUrl} alt="" loading="lazy" className="h-9 w-9 rounded-lg object-cover" />
-        )}
-        <div className="min-w-0">
-          <h3 className="truncate font-display text-base font-bold">{offer.title}</h3>
-          {offer.appName && <p className="truncate text-xs text-slate-400">{offer.appName}</p>}
-        </div>
-      </div>
-      <p className="line-clamp-2 text-sm leading-relaxed text-slate-400">
-        {offer.shortDescription}
-      </p>
-      <div className="flex items-center gap-2 pt-1">
-        <span className="chip bg-gradient-to-r from-gold-light to-gold-deep text-[#241A00]">
-          🪙 {offer.rewardLabel ?? offer.rewardAmount}
+    <div className="flex flex-1 flex-col gap-2 p-3">
+      <h3 className="line-clamp-2 font-display text-sm font-bold leading-snug">{offer.title}</h3>
+      <div className="flex items-center gap-1.5">
+        <CoinIcon size={15} />
+        <span className="font-numbers text-sm font-bold text-accent">
+          +{offer.rewardLabel ?? offer.rewardAmount}
         </span>
         {offer.estimatedTime && (
-          <span className="chip border border-navy-border text-slate-300">
-            ⏱ {offer.estimatedTime}
-          </span>
+          <span className="ml-auto truncate text-[11px] text-ink-muted">{offer.estimatedTime}</span>
         )}
-        <span className="ml-auto">{offer.rating != null && <Stars rating={offer.rating} />}</span>
       </div>
-      <div className="pt-2">
-        <span className="block w-full rounded-xl bg-gradient-to-r from-gold-light via-gold to-gold-deep py-2.5 text-center text-sm font-extrabold text-[#241A00] shadow-glow transition-shadow group-hover:shadow-lg">
-          VIEW OFFER →
-        </span>
-      </div>
+      <span className="btn-accent mt-auto w-full py-2 text-xs tracking-wider">START</span>
     </div>
   </Link>
 );
