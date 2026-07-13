@@ -1,24 +1,31 @@
 import type { Config } from "tailwindcss";
 
+// Tokens mirror prithivi-app/lib/theme/app_colors.dart (design system v4):
+// graphite-navy base + ONE neon-green accent gradient; coin gold for coin
+// glyphs only; flat semantic danger.
 export default {
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        navy: { DEFAULT: "#0A0E21", surface: "#141A35", card: "#1A2145", border: "#2C3765" },
-        royal: "#8B5CF6",
-        gold: { light: "#FFE082", DEFAULT: "#FFB300", deep: "#FF8F00" },
-        cyan: "#22D3EE",
-        emeraldx: "#10B981",
-        hot: "#FF6D3F",
+        bgtop: "#10151F",
+        bgbottom: "#0A0E17",
+        surface: { DEFAULT: "#151C2C", alt: "#1C2438" },
+        hairline: "rgba(148,163,184,0.14)",
+        accent: { DEFAULT: "#05FF08", deep: "#00C853" },
+        onaccent: "#041A06",
+        ink: { DEFAULT: "#F1F5F9", soft: "#94A3B8", muted: "#64748B" },
+        coin: "#EAB308",
+        danger: "#F87171",
       },
       fontFamily: {
-        display: ["Sora", "system-ui", "sans-serif"],
-        body: ["Inter", "system-ui", "sans-serif"],
+        display: ['"Chakra Petch"', "system-ui", "sans-serif"],
+        numbers: ["Orbitron", "system-ui", "sans-serif"],
       },
+      borderRadius: { card: "22px" },
       boxShadow: {
-        glow: "0 0 24px -4px rgba(255, 179, 0, 0.35)",
-        "glow-purple": "0 0 24px -4px rgba(139, 92, 246, 0.35)",
+        glow: "0 0 24px -2px rgba(5, 255, 8, 0.25)",
+        "glow-sm": "0 0 16px -4px rgba(5, 255, 8, 0.35)",
       },
     },
   },
