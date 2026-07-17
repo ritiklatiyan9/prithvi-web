@@ -16,7 +16,7 @@ const Header = (): JSX.Element => {
             <FlameIcon />
           </span>
           <span className="font-display text-lg font-bold tracking-tight">
-            Reward<span className="text-accent">Hub</span>
+            Reward<span className="text-accent">Hubbb</span>
           </span>
         </Link>
         <Link
